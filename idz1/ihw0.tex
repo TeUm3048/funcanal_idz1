@@ -1,0 +1,400 @@
+\problemset{Элементы функционального анализа}
+\problemset{Индивидуальное домашнее задание №1}	% поменяйте номер ИДЗ
+
+\renewcommand*{\proofname}{Решение}
+
+%%%%%%%%%%%%%% ЗАДАНИЕ №1 %%%%%%%%%%%%%%
+%% Условие задания №1
+
+\begin{sympycode}
+v1 = Matrix([3, 6, 0])
+v2 = Matrix([5, 0, 2])
+v3 = Matrix([0, 6, 8])
+v4 = Matrix([Rational(43, 8), 0, 0])
+v5 = Matrix([0, Rational(102, 11), 0])
+v6 = Matrix([0, 0, Rational(35, 3)])
+
+# x < 0, y, z ≥ 0
+v7 = Matrix([-v1[0], v1[1], v1[2]])
+v8 = Matrix([-v2[0], v2[1], v2[2]])
+v9 = Matrix([-v4[0], v4[1], v4[2]])
+
+# y < 0, x, z ≥ 0
+v10 = Matrix([v1[0], -v1[1], v1[2]])
+v11 = Matrix([v3[0], -v3[1], v3[2]])
+v12 = Matrix([v5[0], -v5[1], v5[2]])
+
+# z < 0, x, y ≥ 0
+v13 = Matrix([v2[0], v2[1], -v2[2]])
+v14 = Matrix([v3[0], v3[1], -v3[2]])
+v15 = Matrix([v6[0], v6[1], -v6[2]])
+
+# x,y,z <= 0
+v16 = Matrix([-v1[0], -v1[1], v1[2]])
+v17 = Matrix([-v2[0], v2[1], -v2[2]])
+v18 = Matrix([v3[0], -v3[1], -v3[2]])
+
+# vectors
+a = Matrix([5, -7, 9])
+b = Matrix([-9, 7, 5])
+
+verticals = [
+    ("v1", v1), 
+    ("v2", v2), 
+    ("v3", v3), 
+    ("v4", v4), 
+    ("v5", v5), 
+    ("v6", v6),
+    ("v7", v7),
+    ("v8", v8),
+    ("v9", v9),
+    ("v10", v10),
+    ("v11", v11),
+    ("v12", v12),
+    ("v13", v13),
+    ("v14", v14),
+    ("v15", v15),
+    ("v16", v16),
+    ("v17", v17),
+    ("v18", v18),
+]
+
+verticals_without_names = [v[1] for v in verticals]
+\end{sympycode}
+
+\begin{problem}
+Определить $\left\Vert a \right\Vert$, $\left\Vert b \right\Vert$,
+$\left\Vert a + b \right\Vert$ в норме Минковского, порожденную многогранником $W$.
+
+Многогранник $W$ задан вершинами в первом октанте, остальные вершины получаются из них симметричным отражением относительно координатных плоскостей.
+
+\(v_1 = \sympy{v1}\), \(v_2 = \sympy{v2}\), \(v_3 = \sympy{v3}\), \(v_4 = \sympy{v4}\), \(v_5 = \sympy{v5}\), \(v_6 = \sympy{v6}\).
+
+\(a = \sympy{a}\), \(b = \sympy{b}\).
+\end{problem}
+
+\begin{proof}\hfill
+
+    \subsection*{Определение нормы}
+
+    Норма — функция $|x|: X \rightarrow \mathbf{R}$, обладающая следующими свойствами:
+
+    \begin{enumerate}
+        \item $|x| \geq 0$ и $|x| = 0 \Leftrightarrow x = 0$,
+        \item $|\alpha x| = |\alpha| |x|$,
+        \item $|x + y| \leq |x| + |y|$.
+    \end{enumerate}
+
+    \subsection*{Норма Минковского}
+
+    Пусть задано множество $W$ в линейном пространстве $X$, такое что
+
+    \begin{enumerate}
+        \item $W$ — выпуклое множество
+        \item $0$ — внутренняя точка и точка симметрии $W$
+        \item $\forall x \in X, x \neq 0\ \exists k > 0: \frac{1}{k} x \in W$
+    \end{enumerate}
+
+    Тогда норма Минковского определяется как
+
+    \[
+        \left\Vert x \right\Vert = \inf \{ k > 0: \frac{x}{k} \in W \}
+    \]
+
+    Симметричные точки:
+    \[
+        \begin{aligned}
+             & \sympy{verticals[0:6]}                       \\
+             & x < 0, y, z \geq 0: \sympy{verticals[6:9]}   \\
+             & y < 0, x, z \geq 0: \sympy{verticals[9:12]}  \\
+             & z < 0, x, y \geq 0: \sympy{verticals[12:15]} \\
+             & x, y, z \leq 0: \sympy{verticals[15:18]}     \\
+        \end{aligned}
+    \]
+    \begin{sympycode}
+plane_verticals_in_octant_1 = [[v1, v2, v3], [v1, v2, v4], [v1, v3, v5], [v2, v3, v6]] # +++
+plane_verticals_in_octant_2 = [[Matrix([v[0], -v[1], v[2]]) for v in plane] for plane in plane_verticals_in_octant_1] # +-+
+plane_verticals_in_octant_3 = [[Matrix([v[0], -v[1], -v[2]]) for v in plane] for plane in plane_verticals_in_octant_1] # +--
+plane_verticals_in_octant_4 = [[Matrix([v[0], v[1], -v[2]]) for v in plane] for plane in plane_verticals_in_octant_1] # ++-
+plane_verticals_in_octant_5 = [[Matrix([-v[0], v[1], v[2]]) for v in plane] for plane in plane_verticals_in_octant_1] # -++
+plane_verticals_in_octant_6 = [[Matrix([-v[0], -v[1], v[2]]) for v in plane] for plane in plane_verticals_in_octant_1] # --+
+plane_verticals_in_octant_7 = [[Matrix([-v[0], -v[1], -v[2]]) for v in plane] for plane in plane_verticals_in_octant_1] # ---
+plane_verticals_in_octant_8 = [[Matrix([-v[0], v[1], -v[2]]) for v in plane] for plane in plane_verticals_in_octant_1] # -+-
+
+plane_verticals = [*plane_verticals_in_octant_1, *plane_verticals_in_octant_2, *plane_verticals_in_octant_3, *plane_verticals_in_octant_4, *plane_verticals_in_octant_5, *plane_verticals_in_octant_6, *plane_verticals_in_octant_7, *plane_verticals_in_octant_8]
+\end{sympycode}
+
+\vfill
+
+    Разобьем плоскости на октанты:
+
+    Первый октант: \\
+    \(\sympy{plane_verticals_in_octant_1}\) \\
+
+    Второй октант: \\
+    \(\sympy{plane_verticals_in_octant_2}\) \\
+
+    Третий октант: \\
+    \(\sympy{plane_verticals_in_octant_3}\) \\
+
+    Четвертый октант: \\
+    \(\sympy{plane_verticals_in_octant_4}\) \\
+
+    Пятый октант: \\
+    \(\sympy{plane_verticals_in_octant_5}\) \\
+
+    Шестой октант: \\
+    \(\sympy{plane_verticals_in_octant_6}\) \\
+
+    Седьмой октант: \\
+    \(\sympy{plane_verticals_in_octant_7}\) \\
+
+    Восьмой октант: \\
+    \(\sympy{plane_verticals_in_octant_8}\)
+
+    \begin{sympycode}
+def plane_equation_3points_sympy(p1, p2, p3):
+    """
+    По трем точкам p1, p2, p3 строит уравнение плоскости A*x + B*y + C*z + D = 0,
+    где D < 0, используя Sympy.
+    
+    Параметры:
+    p1, p2, p3: кортежи или списки из 3 чисел, например (x, y, z).
+    
+    Возвращает:
+    (A, B, C, D): коэффициенты уравнения плоскости.
+    """
+    P1 = Matrix(p1)
+    P2 = Matrix(p2)
+    P3 = Matrix(p3)
+    
+    v1 = P2 - P1
+    v2 = P3 - P1
+    
+    normal = v1.cross(v2)  
+    A, B, C = normal
+    
+    # Находим D, подставляя любую из точек (например, P1) в уравнение плоскости
+    # A*x + B*y + C*z + D = 0  =>  D = - (A*x1 + B*y1 + C*z1)
+    D = -(A * P1[0] + B * P1[1] + C * P1[2])
+    
+    if D > 0:
+        A, B, C, D = -A, -B, -C, -D
+
+    return (A, B, C, D)
+\end{sympycode}
+
+    \begin{sympycode}
+plane_in_octant1 = [plane_equation_3points_sympy(*plane) for plane in plane_verticals_in_octant_1]
+plane_in_octant2 = [plane_equation_3points_sympy(*plane) for plane in plane_verticals_in_octant_2]
+plane_in_octant3 = [plane_equation_3points_sympy(*plane) for plane in plane_verticals_in_octant_3]
+plane_in_octant4 = [plane_equation_3points_sympy(*plane) for plane in plane_verticals_in_octant_4]
+plane_in_octant5 = [plane_equation_3points_sympy(*plane) for plane in plane_verticals_in_octant_5]
+plane_in_octant6 = [plane_equation_3points_sympy(*plane) for plane in plane_verticals_in_octant_6]
+plane_in_octant7 = [plane_equation_3points_sympy(*plane) for plane in plane_verticals_in_octant_7]
+plane_in_octant8 = [plane_equation_3points_sympy(*plane) for plane in plane_verticals_in_octant_8]
+
+planes = [*plane_in_octant1, *plane_in_octant2, *plane_in_octant3, *plane_in_octant4, *plane_in_octant5, *plane_in_octant6, *plane_in_octant7, *plane_in_octant8]
+\end{sympycode}
+
+
+
+    \begin{sympycode}
+def print_plane_table(planes):
+    num_cols = 1 + len(planes[0])
+
+    print(r'\begin{tabular}{|c|' + 'c|' * (num_cols - 1) + '}')
+    print(r'\hline')
+
+    # Header row: blank cell on left, then each point from right to left
+    header_cells = [r'\textbf{№}', r'A', r'B', r'C', r'D']
+    print(' & '.join(header_cells) + r'\\')
+    print(r'\hline')
+
+    # Now each plane gets a row
+    for (i, coeffs) in enumerate(planes):
+        coeffs_str = [str(c) for c in coeffs]
+
+        row_str = rf'{i + 1}' + ' & ' + ' & '.join(coeffs_str) + r'\\'
+        print(row_str)
+        print(r'\hline')
+
+    print(r'\end{tabular}')    
+\end{sympycode}
+
+\vfill
+
+    \subsection*{Плоскости}
+
+    Найдём коэффициенты нормальное уравнения плоскости для каждой плоскости в октантах:
+
+    \(A \cdot x + B \cdot y + C \cdot z + D = 0\).
+
+    Выберем $D \leq 0$, так чтобы при подстановке любой точки из многогранника $W$ в уравнение плоскости, левая часть была отрицательной.\\
+
+    \begin{sympycode}
+print_plane_table(planes)
+\end{sympycode}
+\vfill
+
+    \subsection*{Проверка выпуклости} \hfill
+
+    Проверим выпуклость многогранника $W$, используя уравнения плоскостей.
+
+    Так как мы выбрали $D \leq 0$, то если все точки многогранника $W$ при подстановке в уравнения плоскостей будут давать отрицательные значения, то многогранник $W$ выпуклый.
+
+    \begin{sympycode}
+def print_latex_table(planes, points):
+    # Build the LaTeX table. We'll print out a tabular environment.
+    # The number of columns = 1 (for the "Plane" column) + len(points).
+    num_cols = 1 + len(points)
+
+    print(r'\begin{tabular}{|c|' + 'c|' * len(points) + '}')
+    print(r'\hline')
+
+    # Header row: blank cell on left, then each point from right to left
+    header_cells = [r'\textbf{Плоскость\textbackslash Вершины}'] + [
+        f"${name}$" for (name, (px,py,pz)) in points
+    ]
+    print(' & '.join(header_cells) + r'\\')
+    print(r'\hline')
+
+    # Now each plane gets a row
+    for (i, (A,B,C,D)) in enumerate(planes):
+        # Create a symbolic or purely numeric representation of plane
+        # e.g. 48x + 22y - 18z - 276 = 0
+        plane_str = rf'${i + 1}$'
+        # Evaluate the left-hand side A*x + B*y + C*z + D at each point
+        vals = []
+        for (name, (px,py,pz)) in points:
+            val = A*px + B*py + C*pz + D
+            vals.append(str(val))
+        # Build the row: plane equation, then each substitution result
+        row_str = plane_str + ' & ' + ' & '.join(vals) + r'\\'
+        print(row_str)
+        print(r'\hline')
+
+    print(r'\end{tabular}')    
+\end{sympycode}
+    {\tiny
+    \begin{sympycode}
+print_latex_table(planes, verticals[0:6])
+print("\n")
+print_latex_table(planes, verticals[6:12])
+print("\n")
+print_latex_table(planes, verticals[12:18])
+    \end{sympycode}
+    }
+    \normalsize
+
+    \begin{sympycode}
+def calc_norm(v, plane_points, verbose=False):
+    """
+    v: A Sympy Matrix or vector to test (e.g., Matrix([1, 2, 3])) 
+    plane_points: A 3-tuple (u1, u2, u3) of Sympy vectors 
+                 describing your plane, such that:
+                    u1, u2, u3 = plane_points
+    verbose: If True, prints LaTeX logs of each step.
+    """
+    # Unpack plane points
+    u1, u2, u3 = plane_points
+
+    # Step 1: Cross products
+    w1 = u2.cross(u3)
+    w2 = u1.cross(u3)
+    w3 = u1.cross(u2)
+
+    if verbose:
+        print(r"Точки плоскости: \(u_1 = " + latex(u1) + r"\), \(u_2 = " + latex(u2) + r"\), \(u_3 = " + latex(u3) + r"\)")
+        print()
+
+    # Step 2: Divide each w_i by its dot product with the corresponding u_i
+    w1 = w1 / (w1.dot(u1))
+    w2 = w2 / (w2.dot(u2))
+    w3 = w3 / (w3.dot(u3))
+
+    if verbose:
+        print(r"Вычисление биортогонального базиса:")
+        print(r"\[w_{1} = \frac{u_{2} \times u_{3}}{w_{1}\cdot u_{1}} = " + latex(w1) + r"\]")
+        print(r"\[w_{2} = \frac{u_{1} \times u_{3}}{w_{2}\cdot u_{2}} = " + latex(w2) + r"\]")
+        print(r"\[w_{3} = \frac{u_{1} \times u_{2}}{w_{3}\cdot u_{3}} = " + latex(w3) + r"\]")
+        print()
+
+    # Step 3: Build transformation matrix and transform v
+    W = Matrix([list(w1), list(w2), list(w3)])
+    x_W = W * v
+
+    if verbose:
+        print(r"Построение матрицы \(W\) и преобразование вектора \(v\):")
+        print(r"\[W = \begin{pmatrix}")
+        for row in W.tolist():
+            print(" & ".join(str(elem) for elem in row) + r"\\")
+        print(r"\end{pmatrix}\quad,\quad v = " + latex(v) + r"\]")
+        print(r"\[x_{W} = W\cdot v = " + latex(x_W) + r"\]")
+        print()
+
+    # Step 4: Check for nonnegative coordinates
+    if x_W[0] >= 0 and x_W[1] >= 0 and x_W[2] >= 0:
+        result = x_W[0] + x_W[1] + x_W[2]
+        if verbose:
+            print(r"\textbf{Все координаты неотрицательны; норма вектора:}")
+            print(r"\[ ||v|| = x_{W,1} + x_{W,2} + x_{W,3} = " + latex(result) + r"\]")
+            print()
+        return result
+    else:
+        if verbose:
+            print(r"\textbf{Есть отрицательные значения. Не этот конус.}")
+            print()
+        return None
+
+def calc_norm_W(v, planes_as_points, verbose=False):
+    """
+    v: A Sympy vector to test
+    planes_as_points: A list of plane descriptions, each a 3-tuple (u1, u2, u3)
+    verbose: If True, prints logs of the process.
+    """
+    if verbose:
+        print(r"Поиск нормы вектора \(v = " + latex(v) + r"\):")
+        print('\n')
+
+    for i, plane in enumerate(planes_as_points):
+        if verbose:
+            print(r"\textbf{Номер плоскости " + str(i + 1) + "}")
+        norm_value = calc_norm(v, plane, verbose=verbose)
+        if norm_value is not None:
+            if verbose:
+                print(r"\( \left\Vert" + latex(v) + r"\right\Vert = " + latex(norm_value) + r"\)\par\medskip")
+            return i, norm_value
+
+    if verbose:
+        print(r"\textbf{No plane gave a nonnegative combination. Returning (None, None).}")
+    return None, None
+\end{sympycode}
+
+    \subsection*{Определение норм векторов}
+
+    Проверим, лежит ли заданный вектор в конической оболочке,
+    которую образуют три вектора, соответствующие грани многогранника, а именно: выражается ли он как их неотрицательная линейная комбинация
+
+    Для этого постоем биортагональный базисов, так что при умножении на матрицу сразу получаются
+    те самые коэффициенты \(\lambda_i\). Если все \(\lambda_i\) неотрицательны, 
+    то вектор действительно принадлежит конусу.
+
+    Затем сумма \(\lambda_1 + \lambda_2 + \lambda_3\) интерпретируется как «коэффициент масштабирования», 
+    который в задаче равен норме Минковского для данного вектора.
+
+    Найдем норму вектора \(a = \sympy{a}\).
+
+    % Now we can call these functions in a PythonTeX block to see the LaTeX logs:
+    \begin{sympycode}
+_, val_a = calc_norm_W(a, plane_verticals, verbose=True)
+_, val_b = calc_norm_W(b, plane_verticals, verbose=False)
+_, val_ab = calc_norm_W(a + b, plane_verticals, verbose=False)
+\end{sympycode}
+
+    Аналогично, для векторов \(b = \sympy{b}\) и \(a + b = \sympy{a + b}\).
+
+    Ответ: \[||a|| = \left\Vert\sympy{a} \right\Vert = \sympy{val_a.evalf(5)}\],
+    \[||b|| = \left\Vert\sympy{b} \right\Vert = \sympy{val_b.evalf(5)}\],
+    \[||a+b|| = \left\Vert\sympy{a + b} \right\Vert = \sympy{val_ab.evalf(5)}\].
+\end{proof}
